@@ -1,29 +1,45 @@
-import styled, { ThemeProvider } from "styled-components/macro";
-import { useToggle } from "./utility/hooks";
+import { createContext, useEffect } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import styled, {
+  ThemeProvider,
+  createGlobalStyle,
+} from "styled-components/macro";
+import { UserContextProvider } from "./context/UserContext";
+import { useUser } from "./hooks/firebase";
+import { useToggle } from "./hooks/general";
+import Login from "./pages/Login";
+import Main from "./pages/Main";
 
-// connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
-// connectFirestoreEmulator(db, "localhost", 8080);
-// connectStorageEmulator(storage, "localhost", 9199);
+const GlobalStyle = createGlobalStyle`
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 30% 33% 37%;
+*, *::after, *::before {
+  box-sizing: border-box;
+}
 
-  div {
-    height: 100vh;
-  }
+body {
+  background-color: ${(props) => props.theme.b};
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  div:not(:last-child) {
-    border-right: 1px solid ${(props) => props.theme.bd};
-  }
+p,span,h1,h2,h3,h4,h5,h6 {
+  color: ${(props) => props.theme.f};
+}
+
 `;
 
 function App(props) {
   const [theme, toggleTheme] = useToggle(true);
+  const [user, loading] = useUser();
 
   return (
     <ThemeProvider theme={theme ? lightTheme : darkTheme}>
-      <Grid></Grid>
+      <GlobalStyle />
+      <UserContextProvider user={user}>
+        {!loading && (user ? <Main /> : <Login />)}
+      </UserContextProvider>
     </ThemeProvider>
   );
 }
@@ -38,6 +54,7 @@ const lightTheme = {
   f: "#000000",
   fs: "#484848",
   fi: "#ffffff",
+  dark: false,
 };
 
 const darkTheme = {
@@ -50,26 +67,7 @@ const darkTheme = {
   f: "#ffffff",
   fs: "#484848",
   fi: "#000000",
+  dark: true,
 };
-
-// const lightTheme = {
-//   p: "#f57c00",
-//   pl: "#ffad42",
-//   pd: "#bb4d00",
-
-//   bg: "#fafafa",
-//   bgl: "#ffffff",
-//   bgd: "#c7c7c7",
-// };
-
-// const darkTheme = {
-//   p: "#f57c00",
-//   pl: "#ffad42",
-//   pd: "#bb4d00",
-
-//   bg: "#212121",
-//   bgl: "#484848",
-//   bgd: "#000000",
-// };
 
 export default App;
