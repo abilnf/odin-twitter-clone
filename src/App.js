@@ -16,6 +16,10 @@ const GlobalStyle = createGlobalStyle`
   box-sizing: border-box;
 }
 
+html {
+  color-scheme: ${({ theme }) => (theme.dark ? "dark" : "light")};
+}
+
 body {
   background-color: ${(props) => props.theme.b};
   margin: 0;
@@ -35,7 +39,7 @@ function App(props) {
   const [user, loading] = useUser();
 
   return (
-    <ThemeProvider theme={theme ? lightTheme : darkTheme}>
+    <ThemeProvider theme={!theme ? lightTheme : darkTheme}>
       <GlobalStyle />
       <UserContextProvider user={user}>
         {!loading && (user ? <Main /> : <Login />)}
@@ -47,6 +51,9 @@ function App(props) {
 const lightTheme = {
   p: "#f57c00",
   pd: "#bb4d00",
+  pl: "#f57c0055",
+  pfilter:
+    "brightness(0) saturate(100%) invert(46%) sepia(96%) saturate(1042%) hue-rotate(2deg) brightness(97%) contrast(104%);",
   s: "#000000",
   sd: "#212121",
   b: "#ffffff",
@@ -60,6 +67,9 @@ const lightTheme = {
 const darkTheme = {
   p: "#f57c00",
   pd: "#bb4d00",
+  pl: "#f57c0033",
+  pfilter:
+    "brightness(0) saturate(100%) invert(46%) sepia(96%) saturate(1042%) hue-rotate(2deg) brightness(97%) contrast(104%);",
   s: "#ffffff",
   sd: "f5f5f5",
   b: "#000000",

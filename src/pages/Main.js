@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components/macro";
 import Logo from "../components/Logo";
+import TweetModal from "../components/TweetModal";
 import { useUserContext } from "../context/UserContext";
 import { getAtName } from "../firebase";
 
@@ -58,6 +59,9 @@ const SidebarLink = styled(Link)`
 `;
 
 function SidebarItem(props) {
+  console.log(`../assets/icons/${props.icon}.svg`);
+  console.log(`../assets/icons/image.svg`);
+  console.log("---");
   return (
     <SidebarLink to={props.to}>
       <SidebarIcon
@@ -80,9 +84,7 @@ const SidebarContainer = styled.div`
   justify-content: flex-end;
   padding: 8px 64px 16px 0;
 `;
-const LogoContainer = styled.div`
-  margin-left: 16px;
-`;
+
 const PrimaryButtonLarge = styled.button`
   font-weight: bold;
   background-color: ${({ theme }) => theme.p};
@@ -137,7 +139,6 @@ const Spacing = styled.div`
 
 function Main() {
   const user = useUserContext();
-  console.log(user);
   return (
     <Grid>
       <SidebarContainer>
@@ -170,6 +171,7 @@ function Main() {
         </Routes>
       </div>
       <div>single</div>
+      <TweetModal icon="location" />
     </Grid>
   );
 }
