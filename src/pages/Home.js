@@ -19,10 +19,18 @@ const TweetList = styled.div`
   }
 `;
 
-function Home() {
-  const tweets = useCollection("tweets", limit(100));
+function tweetInsertionCallback(list, current) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].time.seconds < current.time.seconds) {
+      list.splice(i, 0, current);
+      return list;
+    }
+  }
+  return list.concat(current);
+}
 
-  // console.log(tweets);
+function Home() {
+  const tweets = useCollection(tweetInsertionCallback, "tweets", limit(100));
 
   return (
     <TweetList>

@@ -42,7 +42,7 @@ function TweetModal(props) {
     <ModalContainer onClick={props.closeModal}>
       <Modal onClick={(e) => e.stopPropagation()}>
         <Icon src={closeButton} onClick={props.closeModal} />
-        <TweetField minRows="3" />
+        <TweetField minRows="3" onSendTweet={props.closeModal} />
       </Modal>
     </ModalContainer>
   );

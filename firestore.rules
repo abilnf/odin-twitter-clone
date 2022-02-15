@@ -8,7 +8,7 @@ service cloud.firestore {
                       && request.resource.data.at.size() <= 30
                       && request.resource.data.name is string
                       && request.resource.data.name.size() <= 30
-                      && request.resource.data.avatar == string
+                      && request.resource.data.avatar is string
                       && request.resource.data.avatar.matches('https?://.*');
     }
     match /tweets/{tweetId} {

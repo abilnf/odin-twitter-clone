@@ -98,7 +98,7 @@ function TweetField(props) {
       setDoc(doc(db, "tweets", nanoid()), {
         uid: user.uid,
         text: text,
-        time: new Date( ),
+        time: new Date(),
       });
       textRef.current.value = "";
     }
@@ -110,6 +110,7 @@ function TweetField(props) {
       <Field
         ref={textRef}
         cols="53"
+        maxLength="280"
         rows={props.minRows}
         placeholder="What's happening?"
       ></Field>
@@ -134,7 +135,14 @@ function TweetField(props) {
       <MediaButton column="7">
         <img src={locationIcon} alt="Location" />
       </MediaButton>
-      <PrimaryButton onClick={sendTweet}>Twǝǝt</PrimaryButton>
+      <PrimaryButton
+        onClick={() => {
+          sendTweet();
+          props.onSendTweet();
+        }}
+      >
+        Twǝǝt
+      </PrimaryButton>
     </Grid>
   );
 }

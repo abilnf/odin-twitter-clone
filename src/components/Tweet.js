@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components/macro";
 import { useDocument } from "../hooks/firebase";
 
@@ -21,6 +22,9 @@ const Text = styled.p`
   grid-row: 2;
   grid-column: 2 / -1;
   margin: 0;
+  word-wrap: break-word;
+  overflow: hidden;
+  /* word-break: break-all; */
 `;
 
 const Username = styled.span`
@@ -48,11 +52,19 @@ const months = [
 
 function Tweet({ tweet }) {
   const userData = useDocument("users", tweet.uid);
-  const time = new Date().getTime() / 1000 - tweet.time.seconds;
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const time = currentTime.getTime() / 1000 - tweet.time.seconds;
 
   let formattedTime;
   if (time < 60) {
-    formattedTime = `${time}s`;
+    formattedTime = `${Math.floor(time)}s`;
   } else if (time < 60 * 60) {
     formattedTime = `${Math.floor(time / 60)}m`;
   } else if (time < 60 * 60 * 24) {

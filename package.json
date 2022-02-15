@@ -20,7 +20,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "emulator": "firebase emulators:start --only storage,firestore,auth --import=./firebase_emulator_storage --export-on-exit"
+    "emulator": "firebase emulators:start --only storage,firestore,auth --import=./firebase_emulator_storage --export-on-exit",
+    "predeploy": "npm run build",
+    "gh-pages-deploy": "gh-pages -d build",
+    "firebase-deploy": "firebase deploy --only firestore,storage,auth",
+    "deploy": "npm run gh-pages-deploy && npm run firebase-deploy"
   },
   "eslintConfig": {
     "extends": [

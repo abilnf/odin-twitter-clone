@@ -38,9 +38,12 @@ html {
 body {
   background-color: ${(props) => props.theme.b};
   margin: 0;
-  font-family: "Roboto", sans-serif;
+  font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* overflow: hidden; */
 }
 
 p,span,h1,h2,h3,h4,h5,h6 {

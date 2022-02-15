@@ -42,7 +42,11 @@ function useDeepCompareEffect(callback, dependencies, deepDependencies) {
   );
 }
 
-export function useCollection(collectionName, ...queryOptions) {
+export function useCollection(
+  insertDocCallback,
+  collectionName,
+  ...queryOptions
+) {
   const [docs, setDocs] = useState([]);
 
   useDeepCompareEffect(
@@ -57,7 +61,8 @@ export function useCollection(collectionName, ...queryOptions) {
           if (change.type === "added") {
             const data = change.doc.data();
             data.docId = change.doc.id;
-            setDocs((prevDocs) => prevDocs.concat(data));
+            setDocs((prevDocs) => insertDocCallback(prevDocs.slice(), data));
+            // setDocs((prevDocs) => prevDocs.concat(data));
           }
         });
       });

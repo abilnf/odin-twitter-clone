@@ -76,6 +76,8 @@ const Sidebar = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  position: fixed;
 `;
 
 const SidebarContainer = styled.div`
@@ -136,6 +138,18 @@ const Spacing = styled.div`
   flex-grow: 1;
 `;
 
+const MiddleContainer = styled.div`
+  grid-column: 2;
+  /* overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  } */
+`;
+
 function Main() {
   const user = useUserContext();
 
@@ -165,12 +179,12 @@ function Main() {
           </SidebarProfile>
         </Sidebar>
       </SidebarContainer>
-      <div>
+      <MiddleContainer>
         <Routes>
           <Route path="home" element={<Home />} />
           <Route path="*" element={<Redirect />} />
         </Routes>
-      </div>
+      </MiddleContainer>
       <div>single</div>
       {tweetModalOpen && (
         <TweetModal icon="location" closeModal={toggleTweetModalOpen} />
