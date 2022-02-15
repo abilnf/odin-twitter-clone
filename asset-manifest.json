@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/odin-twitter-clone/static/js/main.3847a038.js",
+    "main.js": "/odin-twitter-clone/static/js/main.4fb80688.js",
     "static/media/background.png": "/odin-twitter-clone/static/media/background.9ac2023fccc8f1ba5023.png",
     "static/media/settings.svg": "/odin-twitter-clone/static/media/settings.fa1e07972ef3cf474dc4.svg",
     "index.html": "/odin-twitter-clone/index.html",
@@ -28,9 +28,9 @@
     "static/media/analytics.svg": "/odin-twitter-clone/static/media/analytics.588ab402213cf530669c.svg",
     "static/media/bookmarks.svg": "/odin-twitter-clone/static/media/bookmarks.d53fa802eb74922c8254.svg",
     "static/media/home.svg": "/odin-twitter-clone/static/media/home.4943a2ee4b1f64d794a0.svg",
-    "main.3847a038.js.map": "/odin-twitter-clone/static/js/main.3847a038.js.map"
+    "main.4fb80688.js.map": "/odin-twitter-clone/static/js/main.4fb80688.js.map"
   },
   "entrypoints": [
-    "static/js/main.3847a038.js"
+    "static/js/main.4fb80688.js"
   ]
 }
