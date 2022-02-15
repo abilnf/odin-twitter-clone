@@ -11,6 +11,8 @@ import Logo from "../components/Logo";
 import TweetModal from "../components/TweetModal";
 import { useUserContext } from "../context/UserContext";
 import { getAtName } from "../firebase";
+import { useToggle } from "../hooks/general";
+import Home from "./Home";
 
 function Redirect() {
   const navigate = useNavigate();
@@ -59,9 +61,6 @@ const SidebarLink = styled(Link)`
 `;
 
 function SidebarItem(props) {
-  console.log(`../assets/icons/${props.icon}.svg`);
-  console.log(`../assets/icons/image.svg`);
-  console.log("---");
   return (
     <SidebarLink to={props.to}>
       <SidebarIcon
@@ -139,13 +138,13 @@ const Spacing = styled.div`
 
 function Main() {
   const user = useUserContext();
+
+  const [tweetModalOpen, toggleTweetModalOpen] = useToggle(false);
+
   return (
     <Grid>
       <SidebarContainer>
         <Sidebar>
-          {/* <LogoContainer>
-            <Logo size="24px" color={(props) => props.theme.f} />
-          </LogoContainer> */}
           <SidebarItem to="/home" text="" icon="logo" />
           <SidebarItem to="/home" text="Home" icon="home" />
           <SidebarItem to="/home" text="Explore" icon="explore" />
@@ -155,7 +154,9 @@ function Main() {
           <SidebarItem to="/home" text="Lists" icon="lists" />
           <SidebarItem to="/home" text="Profile" icon="profile" />
           <SidebarItem to="/home" text="More" icon="more" />
-          <PrimaryButtonLarge>Twǝǝt</PrimaryButtonLarge>
+          <PrimaryButtonLarge onClick={toggleTweetModalOpen}>
+            Twǝǝt
+          </PrimaryButtonLarge>
           <Spacing />
           <SidebarProfile to={getAtName(user).substring(1)}>
             <img src={user.photoURL} alt="Avatar" />
@@ -166,12 +167,14 @@ function Main() {
       </SidebarContainer>
       <div>
         <Routes>
-          <Route path="home" element={<div>main</div>} />
+          <Route path="home" element={<Home />} />
           <Route path="*" element={<Redirect />} />
         </Routes>
       </div>
       <div>single</div>
-      <TweetModal icon="location" />
+      {tweetModalOpen && (
+        <TweetModal icon="location" closeModal={toggleTweetModalOpen} />
+      )}
     </Grid>
   );
 }
