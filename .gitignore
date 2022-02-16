@@ -24,3 +24,5 @@ yarn-error.log*
 
 *debug.log
 /package-lock.json
+
+/firebase_emulator_storage

@@ -8,10 +8,20 @@ import pollIcon from "../assets/icons/poll.svg";
 import emojiIcon from "../assets/icons/emoji.svg";
 import scheduleIcon from "../assets/icons/schedule.svg";
 import locationIcon from "../assets/icons/location.svg";
-import { useRef } from "react";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { useRef, useState } from "react";
+import {
+  addDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db, storage } from "../firebase";
 import { nanoid } from "nanoid";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+
+import closeIcon from "../assets/icons/close.svg";
+import { useRerender } from "../hooks/general";
 
 const Grid = styled.div`
   display: grid;
@@ -29,12 +39,15 @@ const Avatar = styled.img`
 const Field = styled(AutoExpandTextArea)`
   font-size: 1.2rem;
   /* min-height: 3.6rem; */
-  grid-row: 1;
-  grid-column: 2 / -1;
   background-color: transparent;
   border: 0;
   resize: none;
   outline: 0;
+`;
+
+const FieldContainer = styled.div`
+  grid-row: 1;
+  grid-column: 2 / -1;
 `;
 
 const WhoCanReplyContainer = styled.div`
@@ -87,38 +100,142 @@ const PrimaryButton = styled.button`
   }
 `;
 
+const TweetFieldImageContainer = styled.div`
+  position: relative;
+  margin-top: 5px;
+`;
+
+const TweetFieldImageRemove = styled.button`
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: ${({ theme }) => theme.bd};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  img {
+    width: 18px;
+    height: 18px;
+    filter: ${(props) => !props.theme.dark && "invert(1)"};
+  }
+`;
+
+const TweetFieldImage = styled.img`
+  max-height: 100vh;
+  max-width: 100%;
+  object-fit: contain;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
 function TweetField(props) {
+  // const forceRerender = useRerender();
   const user = useUserContext();
 
   const textRef = useRef();
+  const tweetImageRef = useRef();
+  const tweetImageInputRef = useRef();
+  const [tweetImage, setTweetImage] = useState();
 
-  function sendTweet() {
+  function resetImage() {
+    tweetImageInputRef.current.value = "";
+    setTweetImage("");
+  }
+
+  async function sendTweet() {
     const text = textRef.current.value.trim();
-    if (text) {
-      setDoc(doc(db, "tweets", nanoid()), {
+    if (text || tweetImageInputRef.current.files.length) {
+      textRef.current.value = "";
+      tweetImageRef.current.src = "";
+      const docId = nanoid();
+      const tweetRef = doc(db, "tweets", docId);
+      const creationPromise = setDoc(tweetRef, {
         uid: user.uid,
         text: text,
         time: new Date(),
       });
-      textRef.current.value = "";
+
+      if (tweetImageInputRef.current.files) {
+        const file = tweetImageInputRef.current.files[0];
+        resetImage();
+
+        const newImageRef = ref(storage, `images/${user.uid}/${docId}`);
+
+        const [ignored, data] = await Promise.all([
+          creationPromise,
+          uploadBytesResumable(newImageRef, file).then(async (fileSnapshot) => {
+            const publicImageUrl = await getDownloadURL(newImageRef);
+            return { fileSnapshot, publicImageUrl };
+          }),
+        ]);
+
+        updateDoc(tweetRef, {
+          imageUrl: data.publicImageUrl,
+          imageStoragePath: data.fileSnapshot.metadata.fullPath,
+        });
+      }
     }
   }
 
   return (
     <Grid>
       <Avatar src={user.photoURL} />
-      <Field
-        ref={textRef}
-        cols="53"
-        maxLength="280"
-        rows={props.minRows}
-        placeholder="What's happening?"
-      ></Field>
+      <FieldContainer>
+        <Field
+          ref={textRef}
+          cols="53"
+          maxLength="280"
+          rows={props.minRows}
+          placeholder="What's happening?"
+          onKeyPress={(e) => {
+            if ((e.charCode === 10 || e.charCode === 13) && e.ctrlKey) {
+              sendTweet();
+              props.onSendTweet();
+            }
+          }}
+        />
+        <TweetFieldImageContainer>
+          <TweetFieldImage ref={tweetImageRef} src={tweetImage} />
+          {tweetImage && (
+            <TweetFieldImageRemove onClick={resetImage}>
+              <img src={closeIcon} alt="Remove" />
+            </TweetFieldImageRemove>
+          )}
+        </TweetFieldImageContainer>
+      </FieldContainer>
       <WhoCanReplyContainer>
         <WhoCanReply>Everyone can reply</WhoCanReply>
       </WhoCanReplyContainer>
       <MediaButton column="2">
-        <img src={imageIcon} alt="Images" />
+        <label>
+          <HiddenInput
+            ref={tweetImageInputRef}
+            accept=".jpg, .jpeg, .png"
+            type="file"
+            onChange={(e) => {
+              e.preventDefault();
+              const file = e.target.files[0];
+
+              tweetImageRef.current.file = file;
+
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setTweetImage(e.target.result);
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
+          <img src={imageIcon} alt="Images" />
+        </label>
       </MediaButton>
       <MediaButton column="3">
         <img src={gifIcon} alt="Gif" />

@@ -31,6 +31,7 @@ const Grid = styled.div`
   }
 
   & > div:not(:last-child) {
+    height: 100%;
     border-right: 1px solid ${(props) => props.theme.bd};
   }
 `;
@@ -140,6 +141,8 @@ const Spacing = styled.div`
 
 const MiddleContainer = styled.div`
   grid-column: 2;
+  /* border-left: 1px solid ${(props) => props.theme.bd}; */
+  /* border-right: 1px solid ${(props) => props.theme.bd}; */
   /* overflow-y: auto;
 
   scrollbar-width: none;

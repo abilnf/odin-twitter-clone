@@ -5,7 +5,8 @@ import moreIcon from "../assets/icons/more.svg";
 import { useToggle } from "../hooks/general";
 import { useUserContext } from "../context/UserContext";
 import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
+import { deleteObject, ref } from "firebase/storage";
 
 const Grid = styled.div`
   display: grid;
@@ -23,9 +24,12 @@ const Avatar = styled.img`
   margin-top: -4px;
 `;
 
-const Text = styled.p`
+const ContentContainer = styled.div`
   grid-row: 2;
   grid-column: 2 / -1;
+`;
+
+const Text = styled.p`
   margin: 0;
   word-wrap: break-word;
   overflow: hidden;
@@ -155,6 +159,12 @@ function MenuItem(props) {
   );
 }
 
+const TweetImage = styled.img`
+  max-height: 100vh;
+  max-width: 100%;
+  object-fit: contain;
+`;
+
 function Tweet({ tweet }) {
   const user = useUserContext();
   const userData = useDocument("users", tweet.uid);
@@ -195,6 +205,9 @@ function Tweet({ tweet }) {
             icon="delete"
             onClick={() => {
               deleteDoc(doc(db, "tweets", tweet.docId));
+              if (tweet.imageUrl) {
+                deleteObject(ref(storage, `images/${user.uid}/${tweet.docId}`));
+              }
             }}
           />
         )}
@@ -202,7 +215,10 @@ function Tweet({ tweet }) {
           <MenuItem text="Block User" icon="block" onClick={() => {}} />
         )}
       </Menu>
-      <Text>{tweet.text}</Text>
+      <ContentContainer>
+        <Text>{tweet.text}</Text>
+        {tweet.imageUrl && <TweetImage src={tweet.imageUrl} />}
+      </ContentContainer>
     </Grid>
   );
 }

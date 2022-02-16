@@ -66,6 +66,14 @@ export function useCollection(
             setDocs((prevDocs) =>
               prevDocs.filter((doc) => doc.docId !== change.doc.id)
             );
+          } else if (change.type === "modified") {
+            setDocs((prevDocs) =>
+              prevDocs.map((doc) =>
+                doc.docId !== change.doc.id
+                  ? doc
+                  : { ...doc, ...change.doc.data() }
+              )
+            );
           }
         });
       });

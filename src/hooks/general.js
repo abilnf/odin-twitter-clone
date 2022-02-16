@@ -9,3 +9,10 @@ export function useToggle(def) {
     },
   ];
 }
+
+export function useRerender() {
+  const [bool, setBool] = useState(false);
+  return () => {
+    setBool(!bool);
+  };
+}
