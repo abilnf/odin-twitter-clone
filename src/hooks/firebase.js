@@ -62,7 +62,10 @@ export function useCollection(
             const data = change.doc.data();
             data.docId = change.doc.id;
             setDocs((prevDocs) => insertDocCallback(prevDocs.slice(), data));
-            // setDocs((prevDocs) => prevDocs.concat(data));
+          } else if (change.type === "removed") {
+            setDocs((prevDocs) =>
+              prevDocs.filter((doc) => doc.docId !== change.doc.id)
+            );
           }
         });
       });

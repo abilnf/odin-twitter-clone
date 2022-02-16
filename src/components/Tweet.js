@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components/macro";
-import { useDocument } from "../hooks/firebase";
+import { useDocument, useUser } from "../hooks/firebase";
+import moreIcon from "../assets/icons/more.svg";
+import { useToggle } from "../hooks/general";
+import { useUserContext } from "../context/UserContext";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Grid = styled.div`
   display: grid;
@@ -50,7 +55,108 @@ const months = [
   "Dec",
 ];
 
+const Icon = styled.img`
+  filter: ${({ theme }) => theme.fsfilter};
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  border-radius: 100%;
+  &:hover {
+    filter: ${({ theme }) => theme.pfilter};
+    background-color: ${({ theme }) => theme.pl};
+  }
+`;
+
+const MenuContainer = styled.div`
+  position: relative;
+`;
+
+const MenuBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* z-index: -1; */
+`;
+
+const MenuList = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* z-index: 1; */
+  background-color: ${({ theme }) => theme.b};
+  border: 1px solid ${({ theme }) => theme.bd};
+  box-shadow: 0 0 3px ${({ theme }) => theme.bd};
+  border-radius: 8px;
+
+  * {
+    user-select: none;
+  }
+`;
+
+function Menu(props) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <MenuContainer>
+      <div onClick={() => setVisible(true)}>{props.icon}</div>
+      {visible && (
+        <div>
+          <MenuBackdrop onClick={() => setVisible(false)}></MenuBackdrop>
+          <MenuList
+            onClick={() => {
+              setVisible(false);
+            }}
+          >
+            {props.children}
+          </MenuList>
+        </div>
+      )}
+    </MenuContainer>
+  );
+}
+
+const MenuItemIcon = styled.img`
+  filter: ${(props) => !props.theme.dark && "invert(1)"};
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+`;
+
+const MenuItemText = styled.span`
+  font-size: 1.2rem;
+  vertical-align: middle;
+  margin-left: 8px;
+  font-weight: 300;
+`;
+const MenuItemButton = styled.button`
+  width: max-content;
+  padding: 12px;
+  transition: all 200ms ease;
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  &:hover {
+    background-color: ${(props) => props.theme.bd};
+  }
+`;
+
+function MenuItem(props) {
+  return (
+    <MenuItemButton onClick={props.onClick}>
+      <MenuItemIcon
+        src={require(`../assets/icons/${props.icon}.svg`)}
+        alt="Icon"
+      />
+      {props.text && <MenuItemText>{props.text}</MenuItemText>}
+    </MenuItemButton>
+  );
+}
+
 function Tweet({ tweet }) {
+  const user = useUserContext();
   const userData = useDocument("users", tweet.uid);
 
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -82,7 +188,20 @@ function Tweet({ tweet }) {
       <AtName>{userData.at}</AtName>
       <AtName>·</AtName>
       <AtName>{formattedTime}</AtName>
-      <span>...</span>
+      <Menu icon={<Icon src={moreIcon} />}>
+        {tweet.uid === user.uid && (
+          <MenuItem
+            text="Delete Twǝǝt"
+            icon="delete"
+            onClick={() => {
+              deleteDoc(doc(db, "tweets", tweet.docId));
+            }}
+          />
+        )}
+        {tweet.uid !== user.uid && (
+          <MenuItem text="Block User" icon="block" onClick={() => {}} />
+        )}
+      </Menu>
       <Text>{tweet.text}</Text>
     </Grid>
   );

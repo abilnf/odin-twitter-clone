@@ -80,7 +80,7 @@ function App(props) {
   }, [user, wasLoggedOut]);
 
   return (
-    <ThemeProvider theme={!theme ? lightTheme : darkTheme}>
+    <ThemeProvider theme={theme ? lightTheme : darkTheme}>
       <GlobalStyle />
       {/* <button onClick={() => signOut(auth)}>test</button> */}
       <UserContextProvider user={user}>
@@ -102,6 +102,8 @@ const lightTheme = {
   bd: "#eeeeee",
   f: "#000000",
   fs: "#484848",
+  fsfilter:
+    "brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(1068%) hue-rotate(134deg) brightness(92%) contrast(97%);",
   fi: "#ffffff",
   dark: false,
 };
@@ -118,6 +120,8 @@ const darkTheme = {
   bd: "#212121",
   f: "#ffffff",
   fs: "#666",
+  fsfilter:
+    "brightness(0) saturate(100%) invert(39%) sepia(10%) saturate(8%) hue-rotate(62deg) brightness(99%) contrast(96%);",
   fi: "#000000",
   dark: true,
 };

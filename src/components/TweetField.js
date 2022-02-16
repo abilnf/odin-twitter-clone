@@ -147,4 +147,8 @@ function TweetField(props) {
   );
 }
 
+TweetField.defaultProps = {
+  onSendTweet: () => {},
+};
+
 export default TweetField;

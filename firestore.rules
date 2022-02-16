@@ -18,6 +18,8 @@ service cloud.firestore {
                       && request.resource.data.text is string
                       && request.resource.data.text.size() <= 280
                       && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && 
+              get(/databases/$(database)/documents/tweets/$(tweetId)).data.uid == request.auth.uid
     }
   }
 }
