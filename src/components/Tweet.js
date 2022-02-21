@@ -163,6 +163,7 @@ const TweetImage = styled.img`
   max-height: 100vh;
   max-width: 100%;
   object-fit: contain;
+  margin-top: 8px;
 `;
 
 function Tweet({ tweet }) {

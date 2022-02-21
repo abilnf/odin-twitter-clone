@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import {
   Link,
   Route,
@@ -13,6 +13,8 @@ import { useUserContext } from "../context/UserContext";
 import { getAtName } from "../firebase";
 import { useToggle } from "../hooks/general";
 import Home from "./Home";
+import DarkModeToggle from "react-dark-mode-toggle";
+import { ThemeContext } from "styled-components";
 
 function Redirect() {
   const navigate = useNavigate();
@@ -77,8 +79,9 @@ const Sidebar = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-
   position: fixed;
+  top: 0;
+  bottom: 0;
 `;
 
 const SidebarContainer = styled.div`
@@ -153,14 +156,28 @@ const MiddleContainer = styled.div`
   } */
 `;
 
-function Main() {
+const ThemeToggle = styled.div`
+  position: fixed;
+  top: 8px;
+  right: 8px;
+`;
+
+function Main(props) {
   const user = useUserContext();
+  const theme = useContext(ThemeContext);
 
   const [tweetModalOpen, toggleTweetModalOpen] = useToggle(false);
 
   return (
     <Grid>
       <SidebarContainer>
+        <ThemeToggle>
+          <DarkModeToggle
+            onChange={props.toggleTheme}
+            checked={theme.dark}
+            size={60}
+          />
+        </ThemeToggle>
         <Sidebar>
           <SidebarItem to="/home" text="" icon="logo" />
           <SidebarItem to="/home" text="Home" icon="home" />
@@ -188,7 +205,7 @@ function Main() {
           <Route path="*" element={<Redirect />} />
         </Routes>
       </MiddleContainer>
-      <div>single</div>
+      <div></div>
       {tweetModalOpen && (
         <TweetModal icon="location" closeModal={toggleTweetModalOpen} />
       )}

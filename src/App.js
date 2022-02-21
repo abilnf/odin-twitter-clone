@@ -1,6 +1,7 @@
 import { signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { createContext, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import styled, {
   ThemeProvider,
@@ -35,12 +36,15 @@ html {
   color-scheme: ${({ theme }) => (theme.dark ? "dark" : "light")};
 }
 
-body {
-  background-color: ${(props) => props.theme.b};
-  margin: 0;
+* {
   font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+}
+
+body {
+  background-color: ${(props) => props.theme.b};
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* overflow: hidden; */
@@ -53,7 +57,15 @@ p,span,h1,h2,h3,h4,h5,h6 {
 `;
 
 function App(props) {
-  const [theme, toggleTheme] = useToggle(true);
+  const [cookies, setCookie, removeCookie] = useCookies(["theme"]);
+  const [theme, toggleThemeVar] = useToggle(cookies["theme"] !== "dark");
+  const toggleTheme = () => {
+    setCookie("theme", cookies["theme"] !== "dark" ? "dark" : "light", {
+      expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365 * 10),
+    });
+    toggleThemeVar();
+  };
+
   const [user, loading] = useUser();
 
   const [wasLoggedOut, setWasLoggedOut] = useState(!user && !loading);
@@ -84,7 +96,7 @@ function App(props) {
       <GlobalStyle />
       {/* <button onClick={() => signOut(auth)}>test</button> */}
       <UserContextProvider user={user}>
-        {!loading && (user ? <Main /> : <Login />)}
+        {!loading && (user ? <Main toggleTheme={toggleTheme} /> : <Login />)}
       </UserContextProvider>
     </ThemeProvider>
   );
