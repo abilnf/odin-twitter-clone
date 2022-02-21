@@ -185,7 +185,7 @@ function Tweet({ tweet }) {
   } else if (time < 60 * 60) {
     formattedTime = `${Math.floor(time / 60)}m`;
   } else if (time < 60 * 60 * 24) {
-    formattedTime = `${Math.floor(time / 60 / 24)}h`;
+    formattedTime = `${Math.floor(time / 60 / 60)}h`;
   } else {
     const date = new Date(tweet.time.seconds * 1000);
     formattedTime = `${months[date.getMonth()]} ${date.getDate()}`;
